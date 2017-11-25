@@ -26,6 +26,7 @@ public class CoolantTempStorageModel
         storageAtMaxCapacity = false;
         storageEmpty = false;
         coolantReady = false;
+        coolantNeeded = false;
         coolantPackage = 0.0f;
 
     }
