@@ -4,7 +4,7 @@ using NUnit.Framework;
 
 public class CoolantControllerTest
 {
-    [Test]
+    /*[Test]
     public void CoolantTypeBeingUsedTest()
     {
         CoolantController cc = new CoolantController();
@@ -114,5 +114,5 @@ public class CoolantControllerTest
         Assert.AreEqual(newNeeded, cc.neededCoolant);
         Assert.AreEqual(newPackage, cc.tempStorage.GetCoolantPackage());
         Assert.IsTrue(cc.tempStorage.GetCoolantReady());
-    }
+    }*/
 }

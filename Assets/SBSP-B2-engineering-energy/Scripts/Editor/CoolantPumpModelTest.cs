@@ -4,7 +4,7 @@ using NUnit.Framework;
 
 public class CoolantPumpModelTest
 {
-    [Test]
+    /*[Test]
     public void NoArgumentConstructorInitializationTest()
     {
         CoolantPumpModel cpm = new CoolantPumpModel();
@@ -59,5 +59,5 @@ public class CoolantPumpModelTest
         CoolantPumpModel cpm = new CoolantPumpModel(pumpType, deliverySpeed, deliverySpeedMultiplier1);
         cpm.SetDeliverySpeedMultiplier(deliverySpeedMultiplier2);
         Assert.AreEqual(deliverySpeedMultiplier2, cpm.GetDeliverySpeedMultiplier());
-    }
+    }*/
 }

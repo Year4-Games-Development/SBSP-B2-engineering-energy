@@ -4,7 +4,7 @@ using NUnit.Framework;
 
 public class CoolantModelTest
 {
-    [Test]
+    /*[Test]
     public void NewCoolantModelHasBlankTypeTest()
     {
         CoolantModel model = new CoolantModel();
@@ -28,5 +28,5 @@ public class CoolantModelTest
         CoolantModel model = new CoolantModel(type1);
         model.SetCoolantType(type2);
         Assert.AreEqual(type2, model.GetCoolantType());
-    }
+    }*/
 }

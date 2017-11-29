@@ -5,31 +5,14 @@ using UnityEngine;
 
 public class CoolantModel 
 {
-        private string coolantType;
-       // private float coolantAmount;
+    private string coolantType = "";
+    public string CoolantType { get { return coolantType; } set { coolantType = value; } }
 
-        public CoolantModel()
-        {
-            coolantType = "";
-         //   coolantAmount = 0.0f;
-        }
+    public CoolantModel() { }
 
-        public CoolantModel(string coolantType)
-        {
-            this.coolantType = coolantType;
-         //   this.coolantAmount = coolantAmount;
-        }
-
-        public string GetCoolantType()
-        { return coolantType; }
-
-        public void SetCoolantType(string coolType)
-        { this.coolantType = coolType; }
-
-      //  public float GetCoolantAmount()
-      //  { return coolantAmount; }
-
-      //  public void SetCoolantAmount(float coolType)
-      //  { this.coolantAmount = coolType; }
+    public CoolantModel(string coolantType)
+    {
+        this.coolantType = coolantType;
+    }
 }
 

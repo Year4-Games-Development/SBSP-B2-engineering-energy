@@ -68,14 +68,24 @@ public class EnergyDistributionModel {
 					consumer.PowerSlider.value = 0.0f;
 					consumer.PowerSlider.interactable = false;
 				} else if (consumer.BaseDemandMultiplier > 1.0f && consumer.Temperature >= 0.0f && consumer.Temperature < consumer.MaxTemperature) {
-					consumer.Temperature += consumer.BaseDemandMultiplier * consumer.HeatFactor - consumer.CurrentCoolantDemand;
+                    consumer.Temperature += consumer.BaseDemandMultiplier * consumer.HeatFactor - (coolantController.TempStorage.StorageEmpty ? 0 : consumer.CurrentCoolantDemand);
 				} else if (consumer.BaseDemandMultiplier < 1.0f && consumer.Temperature > 0) {
-					consumer.Temperature -= (1.0f - consumer.BaseDemandMultiplier) * consumer.HeatFactor + consumer.CurrentCoolantDemand;
+                    consumer.Temperature -= (1f - consumer.BaseDemandMultiplier) * consumer.HeatFactor + (coolantController.TempStorage.StorageEmpty ? 0 : consumer.CurrentCoolantDemand);
 				} else if (consumer.Temperature <= 0.0f) {
 					consumer.Temperature = 0.0f;
 					consumer.Overheated = false;
 					consumer.PowerSlider.interactable = true;
 				}
+
+                if (coolantController.TempStorage.StorageEmpty)
+                {
+                    consumer.CoolantSlider.value = 0f;
+                    consumer.CoolantSlider.interactable = false;
+                }
+                else
+                {
+                    consumer.CoolantSlider.interactable = true;
+                }
 			}
 		} else if (energyStorage != null && energyStorage.currentCapacity <= 0.0f) {
 			energyStorage.currentCapacity = 0.0f;
@@ -87,22 +97,35 @@ public class EnergyDistributionModel {
 					consumer.PowerSlider.value = 0.0f;
 					consumer.PowerSlider.interactable = false;
 				}
-				if (consumer.Temperature <= 0.0f) {
-					consumer.Temperature = 0;
-					consumer.Overheated = false;
-				}
-				else
-					consumer.Temperature -= consumer.HeatFactor + consumer.CurrentCoolantDemand;
-			}
+                if (consumer.Temperature <= 0.0f)
+                {
+                    consumer.Temperature = 0;
+                    consumer.Overheated = false;
+                }
+                else if (!coolantController.TempStorage.StorageEmpty)
+                {
+                    consumer.Temperature -= consumer.HeatFactor + consumer.CurrentCoolantDemand;
+                }
+
+                if (coolantController.TempStorage.StorageEmpty)
+                {
+                    consumer.CoolantSlider.value = 0f;
+                    consumer.CoolantSlider.interactable = false;
+                }
+                else
+                {
+                    consumer.CoolantSlider.interactable = true;
+                }
+            }
 		}
 
 
-		coolantController.coolantFlag = true;// Set too true if coolant is needed from consumer,
+		coolantController.CoolantFlag = true;// Set too true if coolant is needed from consumer,
 		//needed coolant from consumer will be taken away from available coolant(set too 1000f, change as you want)
 		//This will allow the consumer coolant to be taken away once from available coolant in Update
-		coolantController.tempStorage.SetCoolantNeeded(true);
-		coolantController.neededCoolant = totalCoolantDemand;//Example number, representing the consumer coolant needed
-		coolantController.coolantPackageFlag = true;
+		coolantController.TempStorage.CoolantNeeded = true;
+		coolantController.NeededCoolant = totalCoolantDemand;//Example number, representing the consumer coolant needed
+		coolantController.CoolantPackageFlag = true;
 
 		totalEnergyDemand = newTotalEnergyDemand;
 		totalCoolantDemand = newTotalCoolantDemand;
