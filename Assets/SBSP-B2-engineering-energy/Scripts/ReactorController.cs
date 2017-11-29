@@ -8,23 +8,31 @@ public class ReactorController : MonoBehaviour {
 	public Image red;
 	public Image green;
 
+	//private EnergyStorage energyStorage;
+
 	public GameObject reactor;
 	private List<GameObject> reactorArray = new List<GameObject>();
 	private int sizeOfReactorArray;
 
 	private ReactorModel rm;
 	public ReactorView rv;
-	public EnergyStorage energyStorage;
+
+	public EnergyStorageVIew escV;
+	public EnergyStorageController esc;
 
 	void Awake(){
+		
 
 		//Talk to Matt about replacing these 2 lines(ReactorView is not MonoBehaviour)
 		Text energy = GameObject.Find ("energyLevel").GetComponent<Text>();
 		Text storage = GameObject.Find ("energyStorageLevel").GetComponent<Text>();
 
 		rm = new ReactorModel ();
-		energyStorage = new EnergyStorage ();
-		rv = new ReactorView (energy, storage);
+		esc = new EnergyStorageController ();
+		escV = new EnergyStorageVIew (storage);
+		rv = new ReactorView (energy);
+
+		esc.GetEnergyStorage ();
 	}
 
 	void Start () {
@@ -70,17 +78,17 @@ public class ReactorController : MonoBehaviour {
 
 		if (rm.GetEnergy() >= rm.GetMaxcapacity()) {
 
-			energyStorage.SetCurrentCapacity (energyStorage.GetCurrentCapacity() + rm.GetMaxcapacity());
+			esc.GetEnergyStorage ().SetCurrentCapacity (esc.GetEnergyStorage ().GetCurrentCapacity() + rm.GetMaxcapacity());
 
-			rv.SetStorageLevel(energyStorage.GetCurrentCapacity()) ;
+			escV.SetStorageLevel(esc.GetEnergyStorage ().GetCurrentCapacity()) ;
 
 			rm.SetEnergy(rm.GetEnergy() - rm.GetMaxcapacity());
 		}
 
-		if (energyStorage.GetCurrentCapacity () >= rm.GetMaxcapacity ()) {
+		if (esc.GetEnergyStorage ().GetCurrentCapacity () >= rm.GetMaxcapacity ()) {
 
-			energyStorage.SetOkToDistribute (true);
-			energyStorage.SetMaxCapacityReached (false);
+			esc.GetEnergyStorage ().SetOkToDistribute (true);
+			esc.GetEnergyStorage ().SetMaxCapacityReached (false);
 
 			green.enabled = true;
 
@@ -89,7 +97,7 @@ public class ReactorController : MonoBehaviour {
 
 		else {
 
-			energyStorage.SetOkToDistribute (false);
+			esc.GetEnergyStorage ().SetOkToDistribute (false);
 
 			red.enabled = true;
 
@@ -97,7 +105,11 @@ public class ReactorController : MonoBehaviour {
 		}
 	}
 
-
+	// Energy Storage getter so other modules
+	// can get reference to it
+	public EnergyStorage GetEnergyStorage() {
+		return esc.GetEnergyStorage ();
+	}
 
 	public void AddingReactor(){
 

@@ -4,11 +4,26 @@ using UnityEngine.UI;
 //using UnityEngine;
 
 public class EnergyDistributionModel {
+	
+	private EnergyStorage energyStorage = null;
+	public EnergyStorage EnergyStorage {
+		get { return energyStorage; }
+		set { energyStorage = value; }
+	}
 
-	// TEMPORARY - to be replaced with calls to actual storage
-	private float temporaryEnergyStorage = 1000f;
+	private CoolantController coolantController;
+	public CoolantController CoolantController {
+		get { return coolantController; }
+		set { coolantController = value; }
+	}
 
-	private const float MAX_HEAT = 10.0f;
+	private float totalEnergyDemand;
+	public float TotalEnergyDemand { get { return totalEnergyDemand; } }
+
+	private float totalCoolantDemand;
+	public float TotalCoolantDemand { get { return totalCoolantDemand; } }
+
+	//public const float MAX_HEAT = 10.0f;
 
 	//list of energy consumers
 	private List<EnergyConsumer> consumers;
@@ -24,36 +39,96 @@ public class EnergyDistributionModel {
 		return true;
 	}
 
-	// TEMPORARY - to be replaced with calls to actual storage
-	public float GetMockStorage() {
-		return temporaryEnergyStorage;
+	public float GetEnergyStorageCurrentCapacity() {
+		if (energyStorage != null && energyStorage.currentCapacity > 0.0f)
+			return energyStorage.currentCapacity;
+		else
+			return 0.0f;
 	}
 
-	public void DrawEnergy(float value) {
-		temporaryEnergyStorage -= value;
-	}
-
-	public float GetTotalEnergyDemand() {
+	/*public float GetTotalEnergyDemand() {
 		float totalDemand = 0;
 		foreach (EnergyConsumer consumer in consumers) {
 			totalDemand += consumer.EnergyConsumption;
 		}
 		return totalDemand;
-	}
+	}*/
 
 	public void UpdateModel() {
-		temporaryEnergyStorage -= GetTotalEnergyDemand ();
+		float newTotalEnergyDemand = 0.0f;
+		float newTotalCoolantDemand = 0.0f;
+		if (energyStorage != null && energyStorage.currentCapacity > 0.0f) {
+			energyStorage.currentCapacity -= totalEnergyDemand;
+			foreach (EnergyConsumer consumer in consumers) {
+				newTotalEnergyDemand += consumer.CurrentEnergyDemand;
+				newTotalCoolantDemand += consumer.CurrentCoolantDemand;
+				if (consumer.Temperature >= consumer.MaxTemperature && !consumer.Overheated) {
+					consumer.Temperature = consumer.MaxTemperature;
+					consumer.Overheated = true;
+					consumer.PowerSlider.value = 0.0f;
+					consumer.PowerSlider.interactable = false;
+				} else if (consumer.BaseDemandMultiplier > 1.0f && consumer.Temperature >= 0.0f && consumer.Temperature < consumer.MaxTemperature) {
+                    consumer.Temperature += consumer.BaseDemandMultiplier * consumer.HeatFactor - (coolantController.TempStorage.StorageEmpty ? 0 : consumer.CurrentCoolantDemand);
+				} else if (consumer.BaseDemandMultiplier < 1.0f && consumer.Temperature > 0) {
+                    consumer.Temperature -= (1f - consumer.BaseDemandMultiplier) * consumer.HeatFactor + (coolantController.TempStorage.StorageEmpty ? 0 : consumer.CurrentCoolantDemand);
+				} else if (consumer.Temperature <= 0.0f) {
+					consumer.Temperature = 0.0f;
+					consumer.Overheated = false;
+					consumer.PowerSlider.interactable = true;
+				}
 
-		foreach (EnergyConsumer consumer in consumers) {
-			if (consumer.Heat > MAX_HEAT) {
-				consumer.Heat = MAX_HEAT;
-			} else if (consumer.CurrentEnergyMultiplier > 1.0f && consumer.Heat < MAX_HEAT) {
-				consumer.Heat += consumer.CurrentEnergyMultiplier * consumer.HeatFactor;
-			} else if (consumer.CurrentEnergyMultiplier < 1.0f && consumer.Heat > 0) {
-				consumer.Heat -= (1.0f - consumer.CurrentEnergyMultiplier) * consumer.HeatFactor;
-			} else if (consumer.Heat < 0.0f) {
-				consumer.Heat = 0.0f;
+                if (coolantController.TempStorage.StorageEmpty)
+                {
+                    consumer.CoolantSlider.value = 0f;
+                    consumer.CoolantSlider.interactable = false;
+                }
+                else
+                {
+                    consumer.CoolantSlider.interactable = true;
+                }
 			}
+		} else if (energyStorage != null && energyStorage.currentCapacity <= 0.0f) {
+			energyStorage.currentCapacity = 0.0f;
+			foreach (EnergyConsumer consumer in consumers) {
+				newTotalEnergyDemand += consumer.CurrentEnergyDemand;
+				newTotalCoolantDemand += consumer.CurrentCoolantDemand;
+				consumer.BaseDemandMultiplier = 0.0f;
+				if (consumer.PowerSlider != null) {
+					consumer.PowerSlider.value = 0.0f;
+					consumer.PowerSlider.interactable = false;
+				}
+                if (consumer.Temperature <= 0.0f)
+                {
+                    consumer.Temperature = 0;
+                    consumer.Overheated = false;
+                }
+                else if (!coolantController.TempStorage.StorageEmpty)
+                {
+                    consumer.Temperature -= consumer.HeatFactor + consumer.CurrentCoolantDemand;
+                }
+
+                if (coolantController.TempStorage.StorageEmpty)
+                {
+                    consumer.CoolantSlider.value = 0f;
+                    consumer.CoolantSlider.interactable = false;
+                }
+                else
+                {
+                    consumer.CoolantSlider.interactable = true;
+                }
+            }
 		}
+
+
+		coolantController.CoolantFlag = true;// Set too true if coolant is needed from consumer,
+		//needed coolant from consumer will be taken away from available coolant(set too 1000f, change as you want)
+		//This will allow the consumer coolant to be taken away once from available coolant in Update
+		coolantController.TempStorage.CoolantNeeded = true;
+		coolantController.NeededCoolant = totalCoolantDemand;//Example number, representing the consumer coolant needed
+		coolantController.CoolantPackageFlag = true;
+
+		totalEnergyDemand = newTotalEnergyDemand;
+		totalCoolantDemand = newTotalCoolantDemand;
+
 	}
 }
