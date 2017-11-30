@@ -115,15 +115,44 @@ public class ReactorController : MonoBehaviour {
 
 		// Currently makes up to 4 reactors. The UI needs work
 		// UI fix will be implemented in Sprint III - Week 1
-		if (reactorArray.Count >= 0 && reactorArray.Count <= 3) {
-			
-			GameObject reactorList = Instantiate (reactor, new Vector3 ( 280, 210, 0), Quaternion.identity) as GameObject;
+		if (reactorArray.Count >= 0 && reactorArray.Count <= 1) {
+
+
+			GameObject reactorList = Instantiate (reactor, new Vector3 (280, 210, 0), Quaternion.identity) as GameObject;
+
+				Image[] reactorImage = reactorList.GetComponentsInChildren<Image> () as Image[];
+
+				reactorList.transform.SetParent (GameObject.FindGameObjectWithTag ("Canvas").transform, false);
+			  
+
+				reactorArray.Add (reactorList);
+			  
+
+		}
+		else if (reactorArray.Count == 2) {
+			GameObject reactorList = Instantiate (reactor, new Vector3 (380, 210, 0), Quaternion.identity) as GameObject;
 
 			Image[] reactorImage = reactorList.GetComponentsInChildren<Image> () as Image[];
 
 			reactorList.transform.SetParent (GameObject.FindGameObjectWithTag ("Canvas").transform, false);
 
+
 			reactorArray.Add (reactorList);
 		}
+
+		else if (reactorArray.Count == 3) {
+			GameObject reactorList = Instantiate (reactor, new Vector3 (480, 210, 0), Quaternion.identity) as GameObject;
+
+			Image[] reactorImage = reactorList.GetComponentsInChildren<Image> () as Image[];
+
+			reactorList.transform.SetParent (GameObject.FindGameObjectWithTag ("Canvas").transform, false);
+
+
+			reactorArray.Add (reactorList);
+		}
+
+	
+
 	}
+
 }
