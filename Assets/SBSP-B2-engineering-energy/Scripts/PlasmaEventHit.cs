@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class move : MonoBehaviour {
+public class PlasmaEventHit : MonoBehaviour {
 	public Transform start; // starting position
 
 	void OnTriggerEnter2D(Collider2D hit){
