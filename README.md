@@ -2,7 +2,7 @@
 
 ## SBSP B2 Engineering Energy
 
-version 0.0.32
+version 0.0.39
 
 This repository contains code related to the games development module for the engineering team. 
 The entire project is on the master branch, there are no development branches currently. To play run the reactor-test-system scene in unity.
@@ -28,6 +28,13 @@ Each of the modules are conforming to a MVC pattern, so you will find a model,vi
 - v0.0.30 Conflicts were resolved.
 - v0.0.31 EnergyDistributionModelTest updated and passing (Issue #27).
 - v0.0.32 Readme styling was added and temperature test was completed.
+- v0.0.33 Coolant unit tests done.
+- v0.0.34 Completed Coolant Feature.
+- v0.0.35 The system is working together now with coolant.
+- v0.0.36 Fixed + cleaned up coolant.
+- v0.0.37 Reactor UI Updates in different positions in the scene.
+- v0.0.38 UI update. Changed the position of energy text and changed font size to fit the page for better visual output.
+- v0.0.39 ReamMe was updated and a new version was released.
 
 ###### Team members are: 
 - Juliusz Karski
